@@ -9,12 +9,12 @@ from getpass import getpass
 
 send_from = 'emilialechart@wp.pl'
 send_to = ['marek.baranski@interia.pl']
-text = 'Hello world'
 subject = 'test'
+files = []
 password = getpass("password: ")
 
 
-def send_mail(send_from, send_to, subject, text, password, files=[], server="localhost"):
+def send_mail(send_from, send_to, subject, password, files=[], server="localhost"):
     assert type(send_to) == list
     assert type(files) == list
     msg = MIMEMultipart()
@@ -23,7 +23,9 @@ def send_mail(send_from, send_to, subject, text, password, files=[], server="loc
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    msg.attach(MIMEText(text))
+    with open("template.html", "r", encoding='utf-8') as f:
+        html = f.read()
+    msg.attach(MIMEText(html, 'html'))
 
     for f in files:
         part = MIMEBase('application', "octet-stream")
@@ -38,4 +40,4 @@ def send_mail(send_from, send_to, subject, text, password, files=[], server="loc
     server.close()
 
 
-send_mail(send_from, send_to, subject, text, password, files=[], server=smtplib.SMTP('smtp.wp.pl', 587))
+send_mail(send_from, send_to, subject, password, files, server=smtplib.SMTP('smtp.wp.pl', 587))
