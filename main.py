@@ -14,7 +14,7 @@ send_to = ['marek.baranski@interia.pl']
 send_cc = ['marek.baranski@capgemini.com']
 send_bcc = ['maro.baranski@gmail.com']
 subject = 'test'
-filesToAttach = []
+filesToAttach = ['c:/Users/MABARANS/Desktop/L_32A7.PNG', 'c:/Users/MABARANS/Desktop/front-end to mail_form.jpg']
 password = getpass("password: ")
 
 
