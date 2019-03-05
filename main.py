@@ -8,9 +8,9 @@ from email import encoders
 from getpass import getpass
 
 send_from = 'emilialechart@wp.pl'
-send_to = ['maro.baranski@gmail.com']
+send_to = ['marek.baranski@interia.pl', 'piotr.lisiak@capgemini.com']
 send_cc = ['marek.baranski@capgemini.com']
-send_bcc = ['marek.baranski@interia.pl']
+send_bcc = ['maro.baranski@gmail.com']
 subject = 'test'
 files = []
 password = getpass("password: ")
@@ -22,11 +22,12 @@ def send_mail(send_from, send_to, send_cc, send_bcc, subject, password, files=[]
     assert type(send_bcc) == list
     assert type(files) == list
 
-    msg = MIMEMultipart('alternative')
+    toaddrs = send_to + send_cc + send_bcc
+
+    msg = MIMEMultipart()
     msg['From'] = send_from
-    msg['To'] = COMMASPACE.join(send_to)
-    msg['Cc'] = COMMASPACE.join(send_cc)
-    msg['Bcc'] = COMMASPACE.join(send_bcc)
+    msg['To'] = 'To: %s\r\n' % send_to
+    msg['cc'] = 'cc: %s\r\n' % COMMASPACE.join(send_cc)
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
@@ -43,7 +44,7 @@ def send_mail(send_from, send_to, send_cc, send_bcc, subject, password, files=[]
 
     server.starttls()
     server.login(send_from, password)
-    server.sendmail(send_from, send_to + send_cc + send_bcc, msg.as_string())
+    server.sendmail(send_from, toaddrs, msg.as_string())
     server.close()
 
 
