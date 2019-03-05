@@ -22,29 +22,32 @@ def send_mail(send_from, send_to, send_cc, send_bcc, subject, password, files=[]
     assert type(send_bcc) == list
     assert type(files) == list
 
-    toaddrs = send_to + send_cc + send_bcc
-
-    msg = MIMEMultipart()
-    msg['From'] = send_from
-    msg['To'] = 'To: %s\r\n' % send_to
-    msg['cc'] = 'cc: %s\r\n' % COMMASPACE.join(send_cc)
-    msg['Date'] = formatdate(localtime=True)
-    msg['Subject'] = subject
-
-    with open("template.html", "r", encoding='utf-8') as f:
-        html = f.read()
-    msg.attach(MIMEText(html, 'html'))
-
-    for f in files:
-        part = MIMEBase('application', "octet-stream")
-        part.set_payload(open(f, "rb").read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(f))
-        msg.attach(part)
-
     server.starttls()
     server.login(send_from, password)
-    server.sendmail(send_from, toaddrs, msg.as_string())
+
+    for eachMail in send_to:
+        msg = MIMEMultipart()
+        msg['From'] = send_from
+        msg['To'] = 'To: %s\r\n' % eachMail
+        msg['cc'] = 'cc: %s\r\n' % COMMASPACE.join(send_cc)
+        msg['Date'] = formatdate(localtime=True)
+        msg['Subject'] = subject
+
+        toaddrs = [eachMail] + [send_cc] + [send_bcc]
+
+        with open("template.html", "r", encoding='utf-8') as f:
+            html = f.read()
+        msg.attach(MIMEText(html, 'html'))
+
+        for f in files:
+            part = MIMEBase('application', "octet-stream")
+            part.set_payload(open(f, "rb").read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(f))
+            msg.attach(part)
+
+        server.sendmail(send_from, toaddrs, msg.as_string())
+
     server.close()
 
 
